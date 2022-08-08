@@ -9,10 +9,19 @@ public class Player : MonoBehaviour
     float first_speed;
     float hAxis;        //횡이동
     float vAxis;        //종이동
+    
     bool wDown;         //walk 조작키입력(shift)
     bool jDown;         //점프
+    bool iDown;         //아이템 입수 입력
     bool isjump;
     bool isDodge;
+    bool isSwap;
+
+    bool sDown1, sDown2, sDown3;
+    
+
+    public GameObject[] weapons;
+    public bool[] hasWeapons;
 
 
     Vector3 moveVec;
@@ -20,6 +29,14 @@ public class Player : MonoBehaviour
     Animator anim;
 
     Rigidbody rigid;
+
+
+    GameObject nearObject;
+    GameObject equipWeapon;
+
+    int equipWeaponIndex = -1;
+
+
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
@@ -40,7 +57,8 @@ public class Player : MonoBehaviour
         turn();
         jump();
         dodge();
-
+        interation();
+        swap();
 
         
     }
@@ -51,6 +69,13 @@ public class Player : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         wDown = Input.GetButton("Walk");            //Shift 누르고 있을때만 작동
         jDown = Input.GetButtonDown("Jump");
+        iDown = Input.GetButtonDown("Interation");
+
+        sDown1 = Input.GetButtonDown("Swap1");
+        sDown2 = Input.GetButtonDown("Swap2");
+        sDown3 = Input.GetButtonDown("Swap3");
+
+
     }
 
     void move()
@@ -99,7 +124,7 @@ public class Player : MonoBehaviour
 
     void dodge()
     {
-        if (jDown && moveVec != Vector3.zero && !isjump )
+        if (jDown && moveVec != Vector3.zero && !isjump && !isSwap)
         {
 
             dodgeVec = moveVec;
@@ -129,6 +154,83 @@ public class Player : MonoBehaviour
             isjump = false;
             anim.SetBool("isJump", false);
 
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if(other.tag == "Weapon")
+        {
+            nearObject = other.gameObject;
+            Debug.Log(nearObject);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Weapon")
+        {
+            nearObject = null;
+        }
+    }
+
+
+    void swap()
+    {
+        int weaponIndex = -1;
+
+
+        if (sDown1 && (!hasWeapons[0] || equipWeaponIndex == 0))
+            return;
+        if (sDown2 && (!hasWeapons[1] || equipWeaponIndex == 1))
+            return;
+        if (sDown3 && (!hasWeapons[2] || equipWeaponIndex == 2))
+            return;
+
+  
+
+        
+
+        if((sDown1 || sDown2 || sDown3) && !isjump && !isDodge)
+        {
+            if (sDown1) weaponIndex = 0;
+            else if (sDown2) weaponIndex = 1;
+            else if (sDown3) weaponIndex = 2;
+
+
+            if (equipWeapon != null)
+                equipWeapon.SetActive(false);
+
+            equipWeaponIndex = weaponIndex;
+            equipWeapon = weapons[weaponIndex];
+            equipWeapon.SetActive(true);
+            anim.SetTrigger("doSwap");
+
+            isSwap = true;
+            Invoke("SwapOut", 0.4f);
+        }
+    }
+
+    void SwapOut()
+    {
+        isDodge = false;
+    }
+
+
+    void interation()
+    {
+        if(iDown && nearObject != null && !isjump && !isDodge)
+        {
+            if(nearObject.tag == "Weapon")
+            {
+                Item item = nearObject.GetComponent<Item>();
+                int weaponIndex = item.value;
+
+                hasWeapons[weaponIndex] = true;
+
+                Destroy(nearObject);
+
+            }
         }
     }
 }
