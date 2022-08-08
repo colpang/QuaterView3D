@@ -9,7 +9,13 @@ public class Player : MonoBehaviour
     float first_speed;
     float hAxis;        //횡이동
     float vAxis;        //종이동
-    
+
+
+    //탄약, 코인, 하트, 수류탄 소지 변수
+    //인스펙터에서 설정
+    public int ammo, coin, health, hasGrenades; 
+    public int max_ammo, max_coin, max_health, max_hasGrenades; 
+
     bool wDown;         //walk 조작키입력(shift)
     bool jDown;         //점프
     bool iDown;         //아이템 입수 입력
@@ -22,6 +28,7 @@ public class Player : MonoBehaviour
 
     public GameObject[] weapons;
     public bool[] hasWeapons;
+    public GameObject[] grenades;
 
 
     Vector3 moveVec;
@@ -147,32 +154,6 @@ public class Player : MonoBehaviour
 
 
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.tag == "floor")
-        {
-            isjump = false;
-            anim.SetBool("isJump", false);
-
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if(other.tag == "Weapon")
-        {
-            nearObject = other.gameObject;
-            Debug.Log(nearObject);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Weapon")
-        {
-            nearObject = null;
-        }
-    }
 
 
     void swap()
@@ -232,5 +213,82 @@ public class Player : MonoBehaviour
 
             }
         }
+    }
+
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "floor")
+        {
+            isjump = false;
+            anim.SetBool("isJump", false);
+
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.tag == "Weapon")
+        {
+            nearObject = other.gameObject;
+            Debug.Log(nearObject);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Weapon")
+        {
+            nearObject = null;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Item")
+        {
+            Debug.Log("실행");
+            Item item = other.GetComponent<Item>();
+            Debug.Log(item.gameObject.name);
+            switch (item.type)
+            {
+                case Item.Type.Ammo:
+                    ammo += item.value;
+                    if (ammo > max_ammo)
+                    {
+                        ammo = max_ammo;
+                    }
+                    break;
+                case Item.Type.Coin:
+                    coin += item.value;
+                    if (coin > max_coin)
+                    {
+                        coin = max_coin;
+                    }
+                    break;
+                case Item.Type.Heart:
+                    health += item.value;
+                    if(health >max_health)
+                    {
+                        health = max_health;
+                    }
+                    break;
+                case Item.Type.Grenade:
+                    grenades[hasGrenades].SetActive(true);
+                    hasGrenades += item.value;
+                    if(hasGrenades > max_hasGrenades)
+                    {
+                        hasGrenades = max_hasGrenades;
+                    }
+
+
+                    break;
+
+            }
+            Destroy(other.gameObject);
+        }
+
+
     }
 }
