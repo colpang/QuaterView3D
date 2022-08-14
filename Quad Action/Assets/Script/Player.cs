@@ -19,9 +19,13 @@ public class Player : MonoBehaviour
     bool wDown;         //walk 조작키입력(shift)
     bool jDown;         //점프
     bool iDown;         //아이템 입수 입력
+    bool fDown;         //공격키
+
+
     bool isjump;
     bool isDodge;
     bool isSwap;
+    bool isFireReady = true;
 
     bool sDown1, sDown2, sDown3;
     
@@ -39,7 +43,8 @@ public class Player : MonoBehaviour
 
 
     GameObject nearObject;
-    GameObject equipWeapon;
+    Weapon equipWeapon;
+    float fireDelay;
 
     int equipWeaponIndex = -1;
 
@@ -66,6 +71,7 @@ public class Player : MonoBehaviour
         dodge();
         interation();
         swap();
+        Attack();
 
         
     }
@@ -77,6 +83,7 @@ public class Player : MonoBehaviour
         wDown = Input.GetButton("Walk");            //Shift 누르고 있을때만 작동
         jDown = Input.GetButtonDown("Jump");
         iDown = Input.GetButtonDown("Interation");
+        fDown = Input.GetButtonDown("Fire1");
 
         sDown1 = Input.GetButtonDown("Swap1");
         sDown2 = Input.GetButtonDown("Swap2");
@@ -103,11 +110,32 @@ public class Player : MonoBehaviour
         if (isDodge)
             moveVec = dodgeVec;
 
+
+        if (isSwap || !isFireReady)
+            moveVec = Vector3.zero;
+
         transform.position += moveVec * (wDown ? 1.0f : first_speed) * Time.deltaTime;
 
 
         anim.SetBool("isRun", moveVec != Vector3.zero);
         anim.SetBool("isWalk", wDown);
+    }
+
+    void Attack(){
+        if(equipWeapon == null)
+        {
+            return;
+        }
+
+        fireDelay += Time.deltaTime;
+        isFireReady = equipWeapon.rate < fireDelay;
+
+        if(fDown && isFireReady && !isDodge && isSwap)
+        {
+            equipWeapon.Use();
+            anim.SetTrigger("doSwing");
+            fireDelay = 0;
+        }
     }
 
     void turn()
@@ -180,11 +208,11 @@ public class Player : MonoBehaviour
 
 
             if (equipWeapon != null)
-                equipWeapon.SetActive(false);
+                equipWeapon.gameObject.SetActive(false);
 
             equipWeaponIndex = weaponIndex;
-            equipWeapon = weapons[weaponIndex];
-            equipWeapon.SetActive(true);
+            equipWeapon = weapons[weaponIndex].GetComponent<Weapon>();
+            equipWeapon.gameObject.SetActive(true);
             anim.SetTrigger("doSwap");
 
             isSwap = true;
