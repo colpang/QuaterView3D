@@ -8,8 +8,19 @@ public class Weapon : MonoBehaviour
     public Type type;
     public int damage;
     public float rate;
+
+    public int maxAmmo, curAmmo;    //전체 탄약, 현재 탄약 변수
+
     public BoxCollider meleeArea;
     public TrailRenderer trailEffect;
+
+    public Transform bulletPos;     //총알 위치
+    public GameObject bullet;
+
+    public Transform bulletCasePos;     //탄피 위치
+    public GameObject bulletCase;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +41,13 @@ public class Weapon : MonoBehaviour
             StartCoroutine("Swing");    //코루틴 실행
 
         }
+        else if(type == Type.Range && curAmmo >0)
+        {
+            curAmmo--;
+            StopCoroutine("Shot");
+            StartCoroutine("Shot");
+        }
+
     }
 
     IEnumerator Swing()
@@ -46,6 +64,24 @@ public class Weapon : MonoBehaviour
         yield return new WaitForSeconds(0.3f); //1초 대기
         trailEffect.enabled = false;
 
+
+    }
+
+    IEnumerator Shot()
+    {
+        //1.총알 발사
+        GameObject intantBullet = Instantiate(bullet, bulletPos.position, bulletPos.rotation);
+        Rigidbody bulletRigid = intantBullet.GetComponent<Rigidbody>();
+        bulletRigid.velocity = bulletPos.forward * 50;
+
+        yield return null;
+
+        //2.탄피 배출
+        GameObject intantBulletCase = Instantiate(bulletCase, bulletCasePos.position, bulletCasePos.rotation);
+        Rigidbody caseRigid = intantBulletCase.GetComponent<Rigidbody>();
+        Vector3 caseVec = bulletCasePos.forward * Random.Range(-3, -1) + Vector3.up * Random.Range(2, 3);
+        caseRigid.AddForce(caseVec, ForceMode.Impulse);
+        caseRigid.AddTorque(Vector3.up * 10, ForceMode.Impulse);
 
     }
 }

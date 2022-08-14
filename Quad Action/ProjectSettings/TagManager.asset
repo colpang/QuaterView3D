@@ -4,10 +4,12 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - floor
   - Weapon
   - Item
   - Melee
+  - Wall
+  - item
+  - Floor
   layers:
   - Default
   - TransparentFX
