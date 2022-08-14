@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
     bool isSwap;
     bool isFireReady = true;
     bool isReload;
+    bool isBoarder;
 
     bool sDown1, sDown2, sDown3;
     
@@ -100,18 +101,6 @@ public class Player : MonoBehaviour
     void move()
     {
         moveVec = new Vector3(hAxis, 0, vAxis).normalized;
-
-
-
-        /*if (wDown) {
-            speed = 1.0f;
-        }
-        else
-        {
-            speed = first_speed;
-        }
-        transform.position += moveVec * speed * Time.deltaTime;*/
-        //삼항연산자 써서 한줄로 작성   wDown이 true이면 1.0, false면 first_speed
         if (isDodge)
             moveVec = dodgeVec;
 
@@ -119,7 +108,8 @@ public class Player : MonoBehaviour
         if (isSwap || !isFireReady || isReload)
             moveVec = Vector3.zero;
 
-        transform.position += moveVec * (wDown ? 1.0f : first_speed) * Time.deltaTime;
+        if(!isBoarder)
+            transform.position += moveVec * (wDown ? 1.0f : first_speed) * Time.deltaTime;
 
 
         anim.SetBool("isRun", moveVec != Vector3.zero);
@@ -238,10 +228,6 @@ public class Player : MonoBehaviour
         isDodge = false;
     }
 
-
-
-
-
     void swap()
     {
         int weaponIndex = -1;
@@ -283,7 +269,6 @@ public class Player : MonoBehaviour
         isSwap = false;
     }
 
-
     void interation()
     {
         if(iDown && nearObject != null && !isjump && !isDodge)
@@ -301,8 +286,20 @@ public class Player : MonoBehaviour
         }
     }
 
-
-
+    void FreezeRotation()
+    {
+        rigid.angularVelocity = Vector3.zero;
+    }
+    void StopToWall()
+    {
+        //Debug.DrawRay(transform.position, transform.forward * 5, Color.green);
+        isBoarder = Physics.Raycast(transform.position, transform.forward, 5, LayerMask.GetMask("Wall"));
+    }
+    private void FixedUpdate()
+    {
+        FreezeRotation();
+        StopToWall();
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Floor")

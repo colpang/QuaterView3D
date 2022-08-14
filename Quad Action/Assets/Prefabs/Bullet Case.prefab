@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 3645216706712756131}
   - component: {fileID: 3738211258716174836}
   - component: {fileID: 8825159649726073050}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Bullet Case
   m_TagString: Untagged
   m_Icon: {fileID: 0}

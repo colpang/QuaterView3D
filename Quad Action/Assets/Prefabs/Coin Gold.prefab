@@ -4916,8 +4916,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5296031633820490678}
   - component: {fileID: 874025511657582531}
-  - component: {fileID: 874025511657582542}
   - component: {fileID: 874025511657582541}
+  - component: {fileID: 874025511657582542}
   - component: {fileID: 874025511657582540}
   m_Layer: 0
   m_Name: Coin Gold
@@ -4960,19 +4960,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!135 &874025511657582542
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4770605145004851468}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 3
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!135 &874025511657582541
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4986,6 +4973,19 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0.41, z: 0}
+--- !u!135 &874025511657582542
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4770605145004851468}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &874025511657582540
 MonoBehaviour:
   m_ObjectHideFlags: 0
