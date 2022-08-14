@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8352675761163786483}
   m_Layer: 8
   m_Name: Bullet HandGun
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -167,7 +167,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4527736219263145754}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.3
@@ -184,4 +184,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f17163ba4f33a43a38935d4dbafda5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dagame: 20
+  damage: 20

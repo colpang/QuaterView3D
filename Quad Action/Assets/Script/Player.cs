@@ -128,7 +128,9 @@ public class Player : MonoBehaviour
         {
             Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo;
-            if (Physics.Raycast(ray, out hitInfo, 100))
+            int playermask = 1 << 11;
+            playermask = ~playermask;
+            if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity,playermask))
             {
                 Vector3 nextVec = hitInfo.point - transform.position;
                 transform.LookAt(transform.position + nextVec);
