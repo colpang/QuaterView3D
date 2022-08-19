@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     bool iDown;         //아이템 입수 입력
     bool fDown;         //공격
     bool rDown;         //재장전
+    bool gDown;
 
 
 
@@ -38,6 +39,8 @@ public class Player : MonoBehaviour
     public GameObject[] weapons;
     public bool[] hasWeapons;
     public GameObject[] grenades;
+    public GameObject grenadeObj;
+    
 
 
     Vector3 moveVec;
@@ -79,6 +82,7 @@ public class Player : MonoBehaviour
         Attack();
         Reload();
         Turn();
+        Grenade();
     }
 
     void getInput()
@@ -89,6 +93,7 @@ public class Player : MonoBehaviour
         jDown = Input.GetButtonDown("Jump");
         iDown = Input.GetButtonDown("Interation");
         fDown = Input.GetButton("Fire1");
+        gDown = Input.GetButtonDown("Fire2");
         rDown = Input.GetButtonDown("Reload");
         sDown1 = Input.GetButtonDown("Swap1");
         sDown2 = Input.GetButtonDown("Swap2");
@@ -128,11 +133,10 @@ public class Player : MonoBehaviour
         {
             Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo;
-            int playermask = 1 << 11;
-            playermask = ~playermask;
-            if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity,playermask))
+            if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity))
             {
                 Vector3 nextVec = hitInfo.point - transform.position;
+                nextVec.y = 0;
                 transform.LookAt(transform.position + nextVec);
             }
         }
@@ -156,6 +160,30 @@ public class Player : MonoBehaviour
         }
     }
 
+    void Grenade()
+    {
+        if (hasGrenades == 0)
+            return;
+
+        if(gDown && !isReload && !isSwap)
+        {
+
+            Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitInfo;
+            if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity))
+            {
+                Vector3 nextVec = hitInfo.point - transform.position;
+                nextVec.y = 10;
+                GameObject instantGrenade = Instantiate(grenadeObj, transform.position, transform.rotation);
+                Rigidbody rigidGrenade = instantGrenade.GetComponent<Rigidbody>();
+                rigidGrenade.AddForce(nextVec, ForceMode.Impulse);
+                rigidGrenade.AddTorque(Vector3.back*10, ForceMode.Impulse);
+
+                hasGrenades--;
+                grenades[hasGrenades].SetActive(false);
+            }
+        }
+    }
     void Reload()
     {
         if(equipWeapon == null)
