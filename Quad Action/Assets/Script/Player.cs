@@ -173,7 +173,7 @@ public class Player : MonoBehaviour
             if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity))
             {
                 Vector3 nextVec = hitInfo.point - transform.position;
-                nextVec.y = 10;
+                nextVec.y = 7;
                 GameObject instantGrenade = Instantiate(grenadeObj, transform.position, transform.rotation);
                 Rigidbody rigidGrenade = instantGrenade.GetComponent<Rigidbody>();
                 rigidGrenade.AddForce(nextVec, ForceMode.Impulse);
