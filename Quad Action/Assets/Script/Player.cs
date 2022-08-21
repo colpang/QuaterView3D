@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     bool isFireReady = true;
     bool isReload;
     bool isBoarder;
+    bool isDamaged;
 
     bool sDown1, sDown2, sDown3;
     
@@ -46,8 +47,8 @@ public class Player : MonoBehaviour
     Vector3 moveVec;
     Vector3 dodgeVec;
     Animator anim;
-
     Rigidbody rigid;
+    MeshRenderer[] meshes;
 
 
     GameObject nearObject;
@@ -62,6 +63,7 @@ public class Player : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
         first_speed = speed;
+        meshes = GetComponentsInChildren<MeshRenderer>();
     }
     // Start is called before the first frame update
     void Start()
@@ -327,6 +329,7 @@ public class Player : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        rigid.velocity = new Vector3(rigid.velocity.x, 0, rigid.velocity.z);
         FreezeRotation();
         StopToWall();
     }
@@ -361,7 +364,6 @@ public class Player : MonoBehaviour
     {
         if(other.tag == "Item")
         {
-            Debug.Log("½ÇÇà");
             Item item = other.GetComponent<Item>();
             Debug.Log(item.gameObject.name);
             switch (item.type)
@@ -400,6 +402,40 @@ public class Player : MonoBehaviour
 
             }
             Destroy(other.gameObject);
+        }
+
+        else if(other.tag == "EnemyBullet")
+        {
+            if (!isDamaged)
+            {
+                Bullet enemyBullet = other.GetComponent<Bullet>();
+                health -= enemyBullet.damage;
+                if(other.GetComponent<Rigidbody>() != null)
+                {
+                    Destroy(other.gameObject);
+                }
+
+                StartCoroutine(onDamage());
+            }
+            
+        }
+
+    }
+
+    IEnumerator onDamage()
+    {
+        isDamaged = true;
+        
+        foreach(MeshRenderer mesh in meshes)
+        {
+            mesh.material.color = Color.yellow;
+        }
+        yield return new WaitForSeconds(1f);
+        isDamaged = false;
+
+        foreach (MeshRenderer mesh in meshes)
+        {
+            mesh.material.color = Color.white;
         }
 
 
