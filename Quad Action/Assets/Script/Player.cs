@@ -33,6 +33,7 @@ public class Player : MonoBehaviour
     bool isReload;
     bool isBoarder;
     bool isDamaged;
+    bool isShop;
 
     bool sDown1, sDown2, sDown3;
     
@@ -154,7 +155,7 @@ public class Player : MonoBehaviour
         fireDelay += Time.deltaTime;
         isFireReady = equipWeapon.rate < fireDelay;
 
-        if(fDown && isFireReady && !isDodge && !isSwap)
+        if(fDown && isFireReady && !isDodge && !isSwap && !isShop)
         {
             equipWeapon.Use();
             anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot");
@@ -200,7 +201,7 @@ public class Player : MonoBehaviour
         if (ammo == 0)
             return;
 
-        if(rDown && !isDodge && !isjump && !isSwap && isFireReady)
+        if(rDown && !isDodge && !isjump && !isSwap && isFireReady && !isShop)
         {
             anim.SetTrigger("doReload");
             isReload = true;
@@ -315,6 +316,14 @@ public class Player : MonoBehaviour
                 Destroy(nearObject);
 
             }
+
+            else if (nearObject.tag == "Shop")
+            {
+                Shop shop = nearObject.GetComponent<Shop>();
+                shop.Enter(this);
+                isShop = true;
+
+            }
         }
     }
 
@@ -345,10 +354,9 @@ public class Player : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Weapon")
+        if (other.tag == "Weapon" || other.tag =="Shop")
         {
             nearObject = other.gameObject;
-            Debug.Log(nearObject);
         }
     }
 
@@ -357,6 +365,13 @@ public class Player : MonoBehaviour
         if (other.tag == "Weapon")
         {
             nearObject = null;
+        }
+        else if(other.tag == "Shop")
+        {
+            Shop shop = nearObject.GetComponent<Shop>();
+            shop.Exit();
+            nearObject = null;
+            isShop = false;
         }
     }
 
