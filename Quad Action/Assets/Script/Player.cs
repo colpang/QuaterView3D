@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
 
     //탄약, 코인, 하트, 수류탄 소지 변수
     //인스펙터에서 설정
-    public int ammo, coin, health, hasGrenades; 
+    public int ammo, coin, health, hasGrenades, score; 
     public int max_ammo, max_coin, max_health, max_hasGrenades; 
 
     bool wDown;         //walk 조작키입력(shift)
@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
 
 
     GameObject nearObject;
-    Weapon equipWeapon;
+    public Weapon equipWeapon;
     float fireDelay;
 
     int equipWeaponIndex = -1;
@@ -65,6 +65,11 @@ public class Player : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         first_speed = speed;
         meshes = GetComponentsInChildren<MeshRenderer>();
+
+        PlayerPrefs.SetInt("MaxScore", 112500);
+        Debug.Log(PlayerPrefs.GetInt("MaxScore"));
+       
+
     }
     // Start is called before the first frame update
     void Start()
