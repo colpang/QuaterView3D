@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
 
     public Camera followCamera;
 
+    public AudioSource jumpsound;
+
     //탄약, 코인, 하트, 수류탄 소지 변수
     //인스펙터에서 설정
     public int ammo, coin, health, hasGrenades, score; 
@@ -34,6 +36,7 @@ public class Player : MonoBehaviour
     bool isBoarder;
     bool isDamaged;
     bool isShop;
+    bool isDead;
 
     bool sDown1, sDown2, sDown3;
     
@@ -42,8 +45,8 @@ public class Player : MonoBehaviour
     public bool[] hasWeapons;
     public GameObject[] grenades;
     public GameObject grenadeObj;
-    
 
+    public GameManager manager;
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -66,7 +69,7 @@ public class Player : MonoBehaviour
         first_speed = speed;
         meshes = GetComponentsInChildren<MeshRenderer>();
 
-        PlayerPrefs.SetInt("MaxScore", 112500);
+        PlayerPrefs.SetInt("MaxScore", 0);
         Debug.Log(PlayerPrefs.GetInt("MaxScore"));
        
 
@@ -80,17 +83,21 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        getInput();
-        move();
-        turn();
-        jump();
-        dodge();
-        interation();
-        swap();
-        Attack();
-        Reload();
-        Turn();
-        Grenade();
+        if (!isDead)
+        {
+            getInput();
+            move();
+            turn();
+            jump();
+            dodge();
+            interation();
+            swap();
+            Attack();
+            Reload();
+            Turn();
+            Grenade();
+        }
+        
     }
 
     void getInput()
@@ -239,6 +246,8 @@ public class Player : MonoBehaviour
             anim.SetBool("isJump", true);
             anim.SetTrigger("doJump"); 
             isjump = true;
+
+            //jumpsound.Play();
         }
         
     }
@@ -343,7 +352,8 @@ public class Player : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        rigid.velocity = new Vector3(rigid.velocity.x, 0, rigid.velocity.z);
+        if(!isjump)
+            rigid.velocity = new Vector3(rigid.velocity.x, 0, rigid.velocity.z);
         FreezeRotation();
         StopToWall();
     }
@@ -455,6 +465,14 @@ public class Player : MonoBehaviour
 
         if (isBossAtk)
             rigid.AddForce(transform.forward * -25, ForceMode.Impulse);
+
+        if (health <= 0 && !isDead)
+        {
+            health = 0;
+            OnDie();
+        }
+
+
         yield return new WaitForSeconds(1f);
 
         isDamaged = false;
@@ -466,6 +484,16 @@ public class Player : MonoBehaviour
 
         if (isBossAtk)
             rigid.velocity = Vector3.zero;
+        
+
+        
+    }
+
+    void OnDie()
+    {
+        anim.SetTrigger("doDie");
+        isDead = true;
+        manager.GameOver();
 
     }
 }

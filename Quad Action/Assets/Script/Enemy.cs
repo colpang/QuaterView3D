@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
+    public GameManager manager;
 
     public enum Type { A,B,C,D};
     public Type enemyType;
@@ -16,6 +17,9 @@ public class Enemy : MonoBehaviour
     public bool isAttack;
     public GameObject bullet;
     public bool isDead;
+    public int score;
+    
+    public GameObject[] coins;
 
 
     public Rigidbody rigid;
@@ -44,7 +48,12 @@ public class Enemy : MonoBehaviour
     }
     void Update()
     {
-        
+        if (isDead)
+        {
+            StopAllCoroutines();
+            return;
+        }
+
         if (nav.enabled && enemyType != Type.D)
         {
             nav.SetDestination(target.position);
@@ -202,9 +211,34 @@ public class Enemy : MonoBehaviour
             Debug.Log(isDead);
             nav.enabled = false;
             isChase = false;
+
+            Player player = target.GetComponent<Player>();
+            player.score += score;
+            int ranCoin = Random.Range(0, 3);
+            Instantiate(coins[ranCoin], transform.position+Vector3.up, Quaternion.identity);
             
+            if(isDead == true )
+            {
+                switch (enemyType)
+                {
+                    case Type.A:
+                        manager.enemyCntA--;
+                        break;
+                    case Type.B:
+                        manager.enemyCntB--;
+                        break;
+                    case Type.C:
+                        manager.enemyCntC--;
+                        break;
+                    case Type.D:
+                        manager.enemyCntD--;
+                        break;
+                }
+            }
+            curHealth = 0;
             ani.SetTrigger("doDie");
             
+
             if (isGrenade)
             {
                 reactVec = reactVec.normalized;
@@ -221,8 +255,7 @@ public class Enemy : MonoBehaviour
                 rigid.AddForce(reactVec * 3, ForceMode.Impulse);
             }
 
-            if(enemyType != Type.D)
-                Destroy(gameObject, 4);
+            Destroy(gameObject, 4);
         }
     }
    
